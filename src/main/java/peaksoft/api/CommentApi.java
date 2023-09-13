@@ -16,7 +16,12 @@ public class CommentApi {
 
     @PostMapping("/comment/{productId}")
     @Secured("USER")
-    public ResponseEntity<SimpleResponse> saveFeedback(@PathVariable Long productId , @RequestBody CommentRequest commentRequest){
+    public ResponseEntity<SimpleResponse> saveComment(@PathVariable Long productId , @RequestBody CommentRequest commentRequest){
         return ResponseEntity.ok( commentService.commentToProduct(productId,commentRequest));
+    }
+
+    @DeleteMapping("/delete/{productId}/{commentId}")
+    public ResponseEntity<SimpleResponse> deleteComment(@PathVariable Long productId,@PathVariable Long commentId){
+        return ResponseEntity.ok( commentService.deleteComment(productId,commentId));
     }
 }

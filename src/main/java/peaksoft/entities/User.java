@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import peaksoft.enums.Role;
+import peaksoft.exception.NotFoundException;
 import peaksoft.validation.EmailValidatian;
 
 import java.time.ZonedDateTime;
@@ -97,5 +98,14 @@ public class User implements UserDetails {
             throw  new RuntimeException("Comment is null!!!");
         }
 
+    }
+
+    public void addFavorite(Favorite favorite) {
+        if(favorite != null){
+            favorites.add(favorite);
+            favorite.setUser(this);
+        }else {
+            throw new NotFoundException("Favorite is null...");
+        }
     }
 }

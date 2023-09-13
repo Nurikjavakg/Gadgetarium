@@ -5,5 +5,5 @@ import peaksoft.dto.simple.SimpleResponse;
 
 public interface CommentService {
     SimpleResponse commentToProduct(Long productId, CommentRequest commentRequest);
-    SimpleResponse deleteComment(Long commentId);
+    SimpleResponse deleteComment(Long productId,Long commentId);
 }

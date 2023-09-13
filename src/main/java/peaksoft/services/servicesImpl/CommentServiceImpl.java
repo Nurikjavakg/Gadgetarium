@@ -41,13 +41,35 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(comment1);
         return SimpleResponse.builder()
                 .httpStatus(HttpStatus.OK)
-                .message("Lesson is updated...")
+                .message("User is commented...")
                 .build();
 
     }
 
     @Override
-    public SimpleResponse deleteComment(Long commentId) {
-        return null;
-    }
+    public SimpleResponse deleteComment(Long productId,Long commentId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.getUserByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User with id:" + email + " not found"));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product with id:" + productId + " not found"));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("Comment with id:" + commentId + " not found"));
+
+        if (!comment.getUser().equals(user)) {
+            throw new NotFoundException("You have permission to delete this comment");
+        }
+            product.getComments().remove(comment);
+            user.getComments().remove(comment);
+            commentRepository.delete(comment);
+            return SimpleResponse.builder()
+                    .httpStatus(HttpStatus.OK)
+                    .message("Comment is deleted...")
+                    .build();
+
+        }
+
 }
