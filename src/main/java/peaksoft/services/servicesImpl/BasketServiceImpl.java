@@ -1,5 +1,6 @@
 package peaksoft.services.servicesImpl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,16 +17,22 @@ import peaksoft.repository.ProductRepository;
 import peaksoft.repository.UserRepository;
 import peaksoft.services.BasketService;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class BasketServiceImpl implements BasketService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private BasketRepository basketRepository;
+    private final BasketRepository basketRepository;
 
     @Override
-    public SimpleResponse saveProductToBasketFromUser(Long productId, Long basketId) {
+    @Transactional
+    public SimpleResponse saveProductToBasketFromUser(Long productId) {
+        String message = "Success add product to basket";
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
@@ -36,25 +43,49 @@ public class BasketServiceImpl implements BasketService {
                 .orElseThrow(()-> new NotFoundException("Product with id:"+productId+" not found"));
 
 
-        if(!user.getBasket().equals(user)){
-            throw new NotFoundException("You have permission to delete this comment");
+        if (user.getBasket() == null) {
+            Basket basket = new Basket();
+            basket.setUser(user);
+            user.setBasket(basket);
+            basketRepository.save(basket);
         }
 
-        Basket basket = new Basket();
-        if(basket.getUser().equals(user)){
-            basketRepository.deleteById(basket.getId());
-            return SimpleResponse.builder()
-                    .httpStatus(HttpStatus.OK)
-                    .message("Chosen is deleted...")
-                    .build();
+        if (user.getBasket().getProducts() != null) {
+            for (Product prod : user.getBasket().getProducts()) {
+                if (prod.getId().equals(product.getId())) {
+
+                    product.getBaskets().remove(user.getBasket());
+
+                    user.getBasket().getProducts().remove(product);
+
+                    message = "Successfully deleted product in basket";
+                } else user.getBasket().getProducts().add(product);
+            }
+        }
+        else {
+            user.getBasket().setProducts(Collections.singletonList(product));
+            product.add(user.getBasket());
         }
 
-        basket.setUser(user);
-        basket.getProducts().add(product);
-        basketRepository.save(basket);
+//
+//        List<Basket> baskets = basketRepository.findAll();
+//        for(Basket basket1 : baskets) {
+//            if (basket1.getUser().equals(user) && (basket1.getProducts().equals(product))) {
+//                basketRepository.deleteById(basket1.getId());
+//                return SimpleResponse.builder()
+//                        .httpStatus(HttpStatus.OK)
+//                        .message("Chosen is deleted...")
+//                        .build();
+//            }
+//        }
+//        Basket basket2 = new Basket();
+//        basket2.setUser(user);
+//        basket2.getProducts().add(product);
+//        product.getBaskets().size();
+//        basketRepository.save(basket2);
         return SimpleResponse.builder()
                 .httpStatus(HttpStatus.OK)
-                .message("Chosen is deleted...")
+                .message(message)
                 .build();
     }
 

@@ -21,4 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("select cast(count (f) as int) from Product p join p.favorites f where p.id = :productId")
     int countFavorite(Long productId);
     Product getProductByName(String name);
+
+
+    Product getProductById(Long productId);
 }

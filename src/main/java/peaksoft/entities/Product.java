@@ -8,6 +8,7 @@ import lombok.Setter;
 import peaksoft.enums.Category;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,7 +30,7 @@ public class Product {
     private Boolean isFavorite;
     private String madeIn;
     private Category category;
-    @ManyToMany(mappedBy = "products", cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "products", cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH, CascadeType.PERSIST})
     private List<Basket>baskets;
     @ManyToOne
     private Brand brand;
@@ -39,6 +40,8 @@ public class Product {
     private List<Comment>comments;
 
 
-
-
+    public void add(Basket basket) {
+        if (baskets == null) baskets = new ArrayList<>();
+        else baskets.add(basket);
     }
+}

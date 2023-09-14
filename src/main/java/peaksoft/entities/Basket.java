@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,9 +16,14 @@ public class Basket {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private List<Product> products;
     @OneToOne
     private User user;
+
+    public void addProduct(Product product){
+        if (products == null) products = new ArrayList<>();
+         else products.add(product);
+    }
 
 }
