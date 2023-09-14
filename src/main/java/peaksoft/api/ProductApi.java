@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import peaksoft.dto.product.ProductRequest;
 import peaksoft.dto.product.ProductResponse;
 import peaksoft.dto.simple.SimpleResponse;
+import peaksoft.enums.Category;
 import peaksoft.services.ProductService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -16,10 +19,10 @@ import peaksoft.services.ProductService;
 public class ProductApi {
     private final ProductService productService;
 
-    @PostMapping
+    @PostMapping("/{brandId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public SimpleResponse saveProduct(@RequestBody @Valid ProductRequest productRequest) {
-        productService.saveProduct(productRequest);
+    public SimpleResponse saveProduct(@RequestBody @Valid ProductRequest productRequest, @PathVariable Long brandId) {
+        productService.saveProduct(productRequest, brandId);
         return SimpleResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message(String.format("Product with name: %s successfully saved!", productRequest.name()))
@@ -28,7 +31,13 @@ public class ProductApi {
 
     @GetMapping("/getInfo/{productId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ProductResponse getInfo(@PathVariable Long productId){
+    public ProductResponse getInfo(@PathVariable Long productId) {
         return productService.getProductWithCommentAndLike(productId);
+    }
+
+    @GetMapping("/getSortAndFilter/{category}/{sortByFilter}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<ProductResponse> getBySortAndFilter(@PathVariable Category category, @PathVariable String sortByFilter) {
+        return productService.getProductByCategoryAndPrice(sortByFilter,category);
     }
 }

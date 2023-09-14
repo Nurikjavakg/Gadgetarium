@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BrandService {
     List<Brand> getAllBrands();
-    SimpleResponse assign(Long productId, Long brandId);
+    SimpleResponse saveBrand(BrandRequest brandRequest);
     BrandResponse getBrandByName(String name);
     SimpleResponse updateBrand(Long BrandId, BrandRequest brandRequest);
     SimpleResponse deleteBrand(Long brandId);

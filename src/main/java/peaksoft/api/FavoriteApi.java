@@ -21,10 +21,10 @@ public class FavoriteApi {
     private final FavoriteService favoriteService;
 
 
-    @PostMapping("/{productId}")
+    @PostMapping("/like/{productId}")
     @Secured("USER")
     @Operation(summary = "Like or dislike",description = "Like or dislike by user")
-    public ResponseEntity<SimpleResponse> saveComment(@PathVariable Long productId){
+    public ResponseEntity<SimpleResponse> saveLikeOrDislike(@PathVariable Long productId){
         return ResponseEntity.ok(favoriteService.clickFavorite(productId));
     }
 

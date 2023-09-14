@@ -40,7 +40,7 @@ public class BasketServiceImpl implements BasketService {
                 .orElseThrow(() -> new NotFoundException("User with id:" + email + " not found"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(()-> new NotFoundException("Product with id:"+productId+" not found"));
+                .orElseThrow(() -> new NotFoundException("Product with id:" + productId + " not found"));
 
 
         if (user.getBasket() == null) {
@@ -50,44 +50,31 @@ public class BasketServiceImpl implements BasketService {
             basketRepository.save(basket);
         }
 
-        if (user.getBasket().getProducts() != null) {
-            for (Product prod : user.getBasket().getProducts()) {
-                if (prod.getId().equals(product.getId())) {
-
-                    product.getBaskets().remove(user.getBasket());
-
-                    user.getBasket().getProducts().remove(product);
-
-                    message = "Successfully deleted product in basket";
-                } else user.getBasket().getProducts().add(product);
+        for (Product p :user.getBasket().getProducts()) {
+            if (p.equals(product)){
+                user.getBasket().getProducts().remove(p);
+                for (Basket b:product.getBaskets()) {
+                    if (b.getUser().equals(user)){
+                        b.getProducts().remove(product);
+                    }
+                }
+                return SimpleResponse.builder()
+                        .httpStatus(HttpStatus.OK)
+                        .message("Product was deleted from user's basket")
+                        .build();
             }
         }
-        else {
-            user.getBasket().setProducts(Collections.singletonList(product));
-            product.add(user.getBasket());
+        user.getBasket().getProducts().add(product);
+        for (Basket b :product.getBaskets()) {
+            if (!b.getUser().equals(user)){
+                product.add(user.getBasket());
+            }
+        }
+            return SimpleResponse.builder()
+                    .httpStatus(HttpStatus.OK)
+                    .message(message)
+                    .build();
         }
 
-//
-//        List<Basket> baskets = basketRepository.findAll();
-//        for(Basket basket1 : baskets) {
-//            if (basket1.getUser().equals(user) && (basket1.getProducts().equals(product))) {
-//                basketRepository.deleteById(basket1.getId());
-//                return SimpleResponse.builder()
-//                        .httpStatus(HttpStatus.OK)
-//                        .message("Chosen is deleted...")
-//                        .build();
-//            }
-//        }
-//        Basket basket2 = new Basket();
-//        basket2.setUser(user);
-//        basket2.getProducts().add(product);
-//        product.getBaskets().size();
-//        basketRepository.save(basket2);
-        return SimpleResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message(message)
-                .build();
+
     }
-
-
-}

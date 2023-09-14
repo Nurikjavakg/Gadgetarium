@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 import peaksoft.entities.Brand;
 @Repository
 public interface BrandRepository extends JpaRepository<Brand, Long> {
+    Brand getBrandByBrandName(String brandName);
 }

@@ -1,6 +1,6 @@
 package peaksoft.dto.product;
 
-import jakarta.persistence.ElementCollection;
+
 import peaksoft.enums.Category;
 
 import java.math.BigDecimal;
@@ -14,6 +14,9 @@ public record ProductRequest(
          String characteristic,
          String madeIn,
          Category category
+
+
+
 ) {
     public ProductRequest {
     }
