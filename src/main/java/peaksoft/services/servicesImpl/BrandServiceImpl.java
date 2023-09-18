@@ -3,12 +3,15 @@ package peaksoft.services.servicesImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import peaksoft.dto.brand.BrandRequest;
 import peaksoft.dto.brand.BrandResponse;
 import peaksoft.dto.simple.SimpleResponse;
 import peaksoft.entities.Brand;
 import peaksoft.entities.Product;
+import peaksoft.exception.AccessDenied;
 import peaksoft.exception.InvalidNameException;
 import peaksoft.repository.BrandRepository;
 import peaksoft.services.BrandService;
@@ -27,6 +30,10 @@ public class BrandServiceImpl implements BrandService{
 
     @Override
     public SimpleResponse saveBrand(BrandRequest brandRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDenied("Authentication required to delete a comment !!!");
+        }
         Brand brand1 = brandRepository.getBrandByBrandName(brandRequest.brandName());
         if (brand1 == null) {
             Brand brand2 = new Brand();

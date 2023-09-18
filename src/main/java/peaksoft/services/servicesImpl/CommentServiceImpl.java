@@ -11,6 +11,7 @@ import peaksoft.dto.simple.SimpleResponse;
 import peaksoft.entities.Comment;
 import peaksoft.entities.Product;
 import peaksoft.entities.User;
+import peaksoft.exception.AccessDenied;
 import peaksoft.exception.NotFoundException;
 import peaksoft.repository.CommentRepository;
 import peaksoft.repository.ProductRepository;
@@ -27,6 +28,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public SimpleResponse commentToProduct(Long productId, CommentRequest commentRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDenied("Authentication required to delete a comment !!!");
+        }
         String email = authentication.getName();
         User user = userRepository.getUserByEmail(email)
                 .orElseThrow(()-> new NotFoundException("User with id:"+email+" not found"));
@@ -49,6 +53,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public SimpleResponse deleteComment(Long productId,Long commentId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDenied("Authentication required to delete a comment !!!");
+        }
         String email = authentication.getName();
         User user = userRepository.getUserByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User with id:" + email + " not found"));

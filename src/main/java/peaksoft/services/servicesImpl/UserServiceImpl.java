@@ -1,25 +1,26 @@
 package peaksoft.services.servicesImpl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import peaksoft.dto.simple.SimpleResponse;
-import peaksoft.dto.user.UserResponse;
 import peaksoft.dto.userInfo.PaginationResponse;
 import peaksoft.dto.userInfo.UserRequestInfo;
 import peaksoft.dto.userInfo.UserResponseInfo;
 import peaksoft.entities.User;
 import peaksoft.enums.Role;
+import peaksoft.exception.AccessDenied;
 import peaksoft.exception.NotFoundException;
 import peaksoft.repository.UserRepository;
 import peaksoft.services.UserService;
-
-import java.time.ZonedDateTime;
-import java.util.NoSuchElementException;
 
 
 @Service
@@ -27,6 +28,7 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public PaginationResponse getAllUsers( int currentPage, int pageSize) {
@@ -47,6 +49,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponseInfo getUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new NotFoundException("User with id:"+userId+" not found..."));
+        if (user.getRole() == Role.ADMIN) {
+            throw new NotFoundException("User with id:" + userId + " not found...");
+        }
         log.info("Get by id:"+userId+" found");
         return userRepository.getUserById(Role.USER,userId)
                 .orElseThrow(()-> {
@@ -58,20 +65,29 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public SimpleResponse updateUser(Long userId, UserRequestInfo userRequestInfo) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDenied("Authentication required to delete a comment !!!");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->{
-                    log.info("User not found...");
-                    return new NoSuchElementException("User not found...");
+                    log.error("User not found...");
+                    return new NotFoundException("User not found...");
                 });
+        if (user.getRole() == Role.ADMIN) {
+            throw new AccessDenied("You do not have permission to delete an admin.");
+        }else {
+            user.setFirstName(userRequestInfo.firstName());
+            user.setLastName(userRequestInfo.lastName());
+            user.setEmail(userRequestInfo.email());
+            user.setPassword(passwordEncoder.encode(userRequestInfo.password()));
+            user.setUpdatedAt(userRequestInfo.updatedAt());
 
-        user.setFirstName(userRequestInfo.firstName());
-        user.setLastName(userRequestInfo.lastName());
-        user.setEmail(userRequestInfo.email());
-        user.setPassword(userRequestInfo.password());
-        user.setUpdatedAt(userRequestInfo.updatedAt());
-        userRepository.save(user);
-        log.info("User with id:"+userId+" updated...");
+            log.info("User with id:" + userId + " updated...");
+        }
         return SimpleResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message(String.format("User with id: %s successfully updated", user.getId()))
@@ -81,18 +97,26 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public SimpleResponse deleteUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->{
-                    log.info("User with id:" + userId + "not found...");
-                    return new NotFoundException("Company with id:" + userId + "not found...");
-                });
-        userRepository.delete(user);
-        log.info("COMPANY IS DELETED...");
-        return SimpleResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("COMPANY IS DELETED...")
-                .build();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDenied("Authentication required to delete a comment !!!");
+        }
 
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> {
+                        log.info("User with id:" + userId + " not found...");
+                        return new NotFoundException("User with id:" + userId + " not found...");
+                    });
+        if (user.getRole() == Role.ADMIN) {
+            throw new AccessDenied("You do not have permission to delete an admin.");
+        } else {
+            userRepository.delete(user);
+        }
+            log.info("User is deleted with id:" + userId + "...");
+            return SimpleResponse.builder()
+                    .httpStatus(HttpStatus.OK)
+                    .message("User with id:" + userId + " has been deleted.")
+                    .build();
+        }
 
     }
-}

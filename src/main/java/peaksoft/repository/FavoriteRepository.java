@@ -6,10 +6,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import peaksoft.dto.favorite.FavoriteResponse;
 import peaksoft.entities.Favorite;
-import peaksoft.entities.User;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {

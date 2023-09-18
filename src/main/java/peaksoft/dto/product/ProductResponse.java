@@ -25,7 +25,9 @@ public class ProductResponse{
     private String madeIn;
     private Category category;
     private List<String> comment;
+    private List<String>favoriteFromUser;
     private int countFavorite;
+    private int countComment;
 
     public ProductResponse(Long id, String name, BigDecimal price, String characteristic, String madeIn, Category category) {
         this.id = id;
@@ -39,6 +41,18 @@ public class ProductResponse{
     public ProductResponse(String brandName, String brandImage) {
         this.brandName = brandName;
         this.brandImage = brandImage;
+    }
+
+    public ProductResponse(String brandName) {
+        this.brandName = brandName;
+    }
+
+    public int getCountComment() {
+        return countComment;
+    }
+
+    public void setCountComment(int countComment) {
+        this.countComment = countComment;
     }
 
     public void setId(Long id) {
@@ -127,6 +141,14 @@ public class ProductResponse{
 
     public int getCountFavorite() {
         return countFavorite;
+    }
+
+    public List<String> getFavoriteFromUser() {
+        return favoriteFromUser;
+    }
+
+    public void setFavoriteFromUser(List<String> favoriteFromUser) {
+        this.favoriteFromUser = favoriteFromUser;
     }
 }
 

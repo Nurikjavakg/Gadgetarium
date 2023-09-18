@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import peaksoft.dto.product.ProductRequest;
 import peaksoft.dto.product.ProductResponse;
 import peaksoft.dto.simple.SimpleResponse;
+import peaksoft.dto.userInfo.UserRequestInfo;
 import peaksoft.enums.Category;
 import peaksoft.services.ProductService;
 
@@ -40,4 +41,23 @@ public class ProductApi {
     public List<ProductResponse> getBySortAndFilter(@PathVariable Category category, @PathVariable String sortByFilter) {
         return productService.getProductByCategoryAndPrice(sortByFilter,category);
     }
+    @PutMapping("/updateProduct/{productId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public SimpleResponse updateProductById(@PathVariable Long productId, @RequestBody ProductRequest productRequest) {
+        productService.updateProduct(productId,productRequest);
+        return SimpleResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message(String.format("Product with name: %s successfully updated!", productRequest.name()))
+                .build();
+    }
+    @DeleteMapping("/deleteProduct/{productId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public SimpleResponse deleteProductById(@PathVariable Long productId){
+        productService.deleteProduct(productId);
+        return SimpleResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("Product with id:"+productId+" is deleted...")
+                .build();
+    }
+
 }

@@ -37,4 +37,10 @@ public class GlobalHandlerException {
         return new ExceptionResponse(HttpStatus.BAD_REQUEST, i.getClass().getName(), i.getMessage());
     }
 
+    @ExceptionHandler(AccessDenied.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse accessDenied(AccessDenied i){
+        return new ExceptionResponse(HttpStatus.BAD_REQUEST, i.getClass().getName(), i.getMessage());
+    }
+
 }

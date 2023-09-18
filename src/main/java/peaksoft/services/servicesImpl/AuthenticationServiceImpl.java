@@ -12,6 +12,8 @@ import peaksoft.dto.user.UserResponseWithToken;
 import peaksoft.config.JwtService;
 import peaksoft.entities.User;
 import peaksoft.enums.Role;
+import peaksoft.exception.AccessDenied;
+import peaksoft.exception.AlreadyExists;
 import peaksoft.exception.InvalidEmailException;
 import peaksoft.repository.UserRepository;
 import peaksoft.services.AuthenticationServcie;
@@ -27,14 +29,21 @@ public class AuthenticationServiceImpl implements AuthenticationServcie {
     private final JwtService jwtService;
     @Override
     public SimpleResponse signUp(SignUpRequest request) {
-
+        User userEmail = userRepository.findByEmail(request.getEmail());
+        if(userEmail != null){
+            throw new AlreadyExists("User with email:"+request.getEmail()+" already exist");
+        }
                User user = convertRequestToUser(request);
                user.setFirstName(request.getFirstName());
                user.setLastName(request.getLastName());
                user.setEmail(request.getEmail());
                user.setPassword(passwordEncoder.encode(request.getPassword()));
                user.setRole(Role.USER);
+              if(!user.getRole().equals(Role.ADMIN)){
                userRepository.save(user);
+               }else {
+                   throw new AccessDenied("You have not permission to signUp like as Admin...");
+               }
                log.info("Successfully saved user with id: " + user.getId());
                return SimpleResponse.builder()
                        .httpStatus(HttpStatus.OK)

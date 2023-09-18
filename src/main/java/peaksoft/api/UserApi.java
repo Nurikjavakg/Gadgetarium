@@ -28,12 +28,12 @@ public class UserApi {
     }
 
     @PutMapping("/updateUser/{userId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
     public SimpleResponse updateUserById(@PathVariable Long userId, @RequestBody UserRequestInfo userRequestInfo) {
         userService.updateUser(userId, userRequestInfo);
         return SimpleResponse.builder()
                 .httpStatus(HttpStatus.OK)
-                .message(String.format("Company with name: %s successfully updated!", userRequestInfo.firstName()))
+                .message(String.format("User with name: %s successfully updated!", userRequestInfo.firstName()))
                 .build();
     }
 
@@ -43,7 +43,7 @@ public class UserApi {
         userService.deleteUser(userId);
         return SimpleResponse.builder()
                 .httpStatus(HttpStatus.OK)
-                .message("company is deleted...")
+                .message("User with id:"+userId+" is deleted...")
                 .build();
     }
 }
