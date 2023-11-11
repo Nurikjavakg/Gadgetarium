@@ -10,7 +10,6 @@ import peaksoft.dto.brand.BrandRequest;
 import peaksoft.dto.brand.BrandResponse;
 import peaksoft.dto.simple.SimpleResponse;
 import peaksoft.entities.Brand;
-import peaksoft.entities.Product;
 import peaksoft.exception.AccessDenied;
 import peaksoft.exception.InvalidNameException;
 import peaksoft.repository.BrandRepository;

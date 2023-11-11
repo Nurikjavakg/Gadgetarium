@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import peaksoft.exception.*;
-import peaksoft.validation.EmailValidation;
+import peaksoft.validation.PasswordValidation;
 
 @RestControllerAdvice
 public class GlobalHandlerException {
@@ -42,5 +42,4 @@ public class GlobalHandlerException {
     public ExceptionResponse accessDenied(AccessDenied i){
         return new ExceptionResponse(HttpStatus.BAD_REQUEST, i.getClass().getName(), i.getMessage());
     }
-
 }

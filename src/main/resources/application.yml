@@ -9,13 +9,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
 
 
 
 server:
-  port: 1010
+  port: 8887
   error:
     include-message: always
 

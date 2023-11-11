@@ -1,19 +1,16 @@
 package peaksoft.entities;
 
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import peaksoft.enums.Role;
 import peaksoft.exception.NotFoundException;
-import peaksoft.validation.EmailValidatian;
-
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "users")
@@ -27,11 +24,13 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
+    private String serialId;
+    private String userName;
     private String firstName;
     private String lastName;
-    @EmailValidatian
     private String email;
     private String password;
+    private Boolean isAgree;
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
     @Enumerated(EnumType.STRING)
@@ -42,6 +41,14 @@ public class User implements UserDetails {
     private Basket basket;
     @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
     private List<Comment> comments;
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
+    private List<Chat> chats;
+
+    public User(Long id, String serialId, String email) {
+        this.id = id;
+        this.serialId = serialId;
+        this.email = email;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

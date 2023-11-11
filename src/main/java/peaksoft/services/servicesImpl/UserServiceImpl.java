@@ -26,18 +26,18 @@ import peaksoft.services.UserService;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public PaginationResponse getAllUsers( int currentPage, int pageSize) {
-        Pageable pageable = PageRequest.of(currentPage-1, pageSize);
-        Page<UserResponseInfo> getAllUsers = userRepository.getAllCompanies(Role.USER,pageable);
+    public PaginationResponse getAllUsers(int currentPage, int pageSize) {
+        Pageable pageable = PageRequest.of(currentPage - 1, pageSize);
+        Page<UserResponseInfo> getAllUsers = userRepository.getAllCompanies(Role.USER, pageable);
         log.info("Get all users method is able...");
         return PaginationResponse.builder()
                 .userResponseInfoList(getAllUsers.getContent())
-                .currentPage(getAllUsers.getNumber()+1)
+                .currentPage(getAllUsers.getNumber() + 1)
                 .pageSize(getAllUsers.getTotalPages())
                 .build();
     }
@@ -50,15 +50,15 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponseInfo getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new NotFoundException("User with id:"+userId+" not found..."));
+                .orElseThrow(() -> new NotFoundException("User with id:" + userId + " not found..."));
         if (user.getRole() == Role.ADMIN) {
             throw new NotFoundException("User with id:" + userId + " not found...");
         }
-        log.info("Get by id:"+userId+" found");
-        return userRepository.getUserById(Role.USER,userId)
-                .orElseThrow(()-> {
-                    log.info("Get by id:"+userId+" not found");
-                    return new NotFoundException("User with id:"+userId+" not exists");
+        log.info("Get by id:" + userId + " found");
+        return userRepository.getUserById(Role.USER, userId)
+                .orElseThrow(() -> {
+                    log.info("Get by id:" + userId + " not found");
+                    return new NotFoundException("User with id:" + userId + " not exists");
                 });
 
 
@@ -73,13 +73,13 @@ public class UserServiceImpl implements UserService{
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() ->{
+                .orElseThrow(() -> {
                     log.error("User not found...");
                     return new NotFoundException("User not found...");
                 });
         if (user.getRole() == Role.ADMIN) {
             throw new AccessDenied("You do not have permission to delete an admin.");
-        }else {
+        } else {
             user.setFirstName(userRequestInfo.firstName());
             user.setLastName(userRequestInfo.lastName());
             user.setEmail(userRequestInfo.email());
@@ -102,21 +102,20 @@ public class UserServiceImpl implements UserService{
             throw new AccessDenied("Authentication required to delete a comment !!!");
         }
 
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> {
-                        log.info("User with id:" + userId + " not found...");
-                        return new NotFoundException("User with id:" + userId + " not found...");
-                    });
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.info("User with id:" + userId + " not found...");
+                    return new NotFoundException("User with id:" + userId + " not found...");
+                });
         if (user.getRole() == Role.ADMIN) {
             throw new AccessDenied("You do not have permission to delete an admin.");
         } else {
             userRepository.delete(user);
         }
-            log.info("User is deleted with id:" + userId + "...");
-            return SimpleResponse.builder()
-                    .httpStatus(HttpStatus.OK)
-                    .message("User with id:" + userId + " has been deleted.")
-                    .build();
-        }
-
+        log.info("User is deleted with id:" + userId + "...");
+        return SimpleResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("User with id:" + userId + " has been deleted.")
+                .build();
     }
+}

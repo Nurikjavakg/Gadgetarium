@@ -1,6 +1,8 @@
 package peaksoft.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,7 @@ public class AuthenticationSignUpApi {
     private final AuthenticationServiceImpl authenticationService;
 
     @PostMapping
-    public ResponseEntity<SimpleResponse> signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<SimpleResponse> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
         return ResponseEntity.ok(authenticationService.signUp(signUpRequest));
 
     }

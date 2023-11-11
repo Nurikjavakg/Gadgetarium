@@ -39,7 +39,6 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH,CascadeType.REMOVE})
     private List<Comment>comments;
 
-
     public void add(Basket basket) {
         if (baskets == null) baskets = new ArrayList<>();
         else baskets.add(basket);
