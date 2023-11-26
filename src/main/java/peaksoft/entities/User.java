@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import peaksoft.enums.Action;
 import peaksoft.enums.Role;
 import peaksoft.exception.NotFoundException;
 import java.time.ZonedDateTime;
@@ -33,6 +34,7 @@ public class User implements UserDetails {
     private Boolean isAgree;
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
+    private Action action;
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})

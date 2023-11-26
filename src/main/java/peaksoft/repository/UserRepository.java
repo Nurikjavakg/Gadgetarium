@@ -7,8 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import peaksoft.dto.userInfo.UserResponseInfo;
 import peaksoft.entities.User;
+import peaksoft.enums.Action;
 import peaksoft.enums.Role;
 
+import java.util.List;
 import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -26,5 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(String email);
 
 
-    }
+    List<User> findAllByAction(Action action);
+}
 

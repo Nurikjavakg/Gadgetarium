@@ -48,8 +48,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<ProductResponse> getProductByCategoryAndPriceDesc(Category category);
     @Query("select new peaksoft.dto.product.ProductResponse(p.id,p.name,p.price, p.characteristic,p.madeIn,p.category)from Product p")
     List<ProductResponse> getProductGetAll();
-
-
     @Query(value = "select images from product_images where product_id = ?1", nativeQuery = true)
     List<String> imagess(Long productId);
 

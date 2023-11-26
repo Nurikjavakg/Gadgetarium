@@ -4,7 +4,9 @@ package peaksoft.enums;
         NEW_MESSAGE,
         NEW_PRIVATE_MESSAGE,
         LEFT,
-        COMMENTED
+        COMMENTED,
+        ONLINE,
+        OFFLINE
 
     }
 
