@@ -22,25 +22,25 @@ import peaksoft.entities.User;
 @RequiredArgsConstructor
 public class UserController {
     private final WebSocketUserService webSocketUserService;
-
-
-    @MessageMapping("/user.addUser")
-    @SendTo("user/topic")
-    public User addUser(@Payload User user){
-        webSocketUserService.saveUser(user);
-        return user;
-    }
-
-    @MessageMapping("/user.addUser")
-    @SendTo("user/topic")
-    public User disconnect(@Payload User user){
-        webSocketUserService.disconnect(user);
-        return user;
-    }
-
-    @GetMapping("/users")
-    public ResponseEntity<List<User>>getAllUser(){
-        return ResponseEntity.ok(webSocketUserService.getConnectedUsers());
-    }
+//
+//
+//    @MessageMapping("/user.addUser")
+//    @SendTo("user/topic")
+//    public User addUser(@Payload User user){
+//        webSocketUserService.saveUser(user);
+//        return user;
+//    }
+//
+//    @MessageMapping("/user.addUser")
+//    @SendTo("user/topic")
+//    public User disconnect(@Payload User user){
+//        webSocketUserService.disconnect(user);
+//        return user;
+//    }
+//
+//    @GetMapping("/users")
+//    public ResponseEntity<List<User>>getAllUser(){
+//        return ResponseEntity.ok(webSocketUserService.getConnectedUsers());
+//    }
     }
 

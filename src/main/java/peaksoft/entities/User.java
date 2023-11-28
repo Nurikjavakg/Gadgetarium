@@ -43,8 +43,8 @@ public class User implements UserDetails {
     private Basket basket;
     @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
     private List<Comment> comments;
-    @OneToMany(mappedBy = "user",cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
-    private List<Chat> chats;
+//    @OneToMany(mappedBy = "user",cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
+//    private List<Chat> chats;
 
     public User(Long id, String serialId, String email) {
         this.id = id;

@@ -16,8 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import peaksoft.repository.UserRepository;
-
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 
@@ -37,31 +38,41 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfig = new CorsConfiguration();
-                    corsConfig.addAllowedHeader("*");
-                    corsConfig.addAllowedMethod("*");
-                    corsConfig.addAllowedOrigin("http://localhost:8887");
+                    corsConfig.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500"));
+                    corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                    corsConfig.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+                    corsConfig.setExposedHeaders(Arrays.asList("x-auth-token"));
+                    corsConfig.setAllowCredentials(true);
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                    source.registerCorsConfiguration("/**", corsConfig);
                     return corsConfig;
                 }))
-                .authorizeHttpRequests((authorizeHttpRequests) ->
+                .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers(
                                         "/",
                                         "/api/auth/**",
                                         "/swagger-ui/**",
                                         "v3/api-docs/**",
-                                        "/api/admin/**")
+                                        "/api/admin/**"
+                                )
                                 .permitAll()
                                 .anyRequest()
-                                .authenticated())
-                .sessionManagement((sessionManagement) ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                                .permitAll()
+                )
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

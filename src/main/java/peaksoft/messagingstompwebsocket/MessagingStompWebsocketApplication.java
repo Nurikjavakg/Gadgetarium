@@ -1,3 +1,4 @@
+/*
 package peaksoft.messagingstompwebsocket;
 
 import org.springframework.boot.SpringApplication;
@@ -10,3 +11,4 @@ public class MessagingStompWebsocketApplication {
 		SpringApplication.run(MessagingStompWebsocketApplication.class, args);
 	}
 }
+*/
